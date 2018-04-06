@@ -1,0 +1,20 @@
+{
+  "name": "connected_entities",
+  "version": "1.0.0",
+  "description": "",
+  "main": "event.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "Asaad Saad",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "lorem-ipsum": "^1.0.4",
+    "mongoose": "^5.0.13"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}
