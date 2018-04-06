@@ -29,25 +29,70 @@ app.get('/', async (req, res) => {
             description: loremIpsum({ count: 1, units: 'sentences', format: 'plain' })
         }).save();
 
+
+        // populate from Mongoose
+        // EventModel.find({ user_id: user_id })
+        //     .select('user_id description -_id')
+        //     .populate({
+        //         path: 'user_id',
+        //         match: { _id: user_id },
+        //         select: 'firstname -_id',
+        //         options: { limit: 1 }
+        //     })
+        //     .skip(0)
+        //     .limit(2)
+        //     .exec()
+        //     .then(results => {
+        //         res.status(200).json({ data: results });
+        //     })
+        //     .catch(err => {
+        //         res.status(400).json({ error: err });
+        //     });
+
+
+        // no population, send request link to client to fetch later
         EventModel.find({ user_id: user_id })
             .select('user_id description -_id')
-            .populate({
-                path: 'user_id',
-                match: { _id: user_id },
-                select: 'firstname -_id',
-                options: { limit: 1 }
-            })
             .skip(0)
             .limit(2)
             .exec()
             .then(results => {
-                res.status(200).json({ data: results });
+                res.status(200).json({
+                    count: results.length,
+                    data: results.map(result => {
+                        return {
+                            description: result.description,
+                            request: {
+                                type: 'GET',
+                                url: `http://localhost:4000/user/${result.user_id}`
+                            }
+                        };
+                    })
+                });
             })
             .catch(err => {
-                res.status(400).json({ error: err });
+                res.status(400).json({ error: err.message });
             });
     } catch (err) {
-        res.status(400).json({ error: err });
+        res.status(400).json({ error: err.message });
+    }
+})
+
+
+
+app.get('/user/:user_id', async (req, res) => {
+    try {
+        UserModel.findOne({ _id: req.params.user_id })
+            .select('firstname lastname -_id')
+            .exec()
+            .then(user => {
+                res.status(200).json({ data: user });
+            })
+            .catch(err => {
+                res.status(400).json({ error: err.message });
+            });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 })
 
